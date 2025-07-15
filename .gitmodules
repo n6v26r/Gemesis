@@ -1,0 +1,3 @@
+[submodule "splendor-tools"]
+	path = splendor-tools
+	url = https://github.com/nerdvana-ro/splendor-tools
