@@ -17,7 +17,7 @@ int moveCnt[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1];
 // NOTE: for debbugging purposes
 std::vector<Move> moveBacklog;
 #endif
-int totalPos = 0;
+int totalMoves = 0;
 
 struct Score {
   int playerCnt;
@@ -91,7 +91,7 @@ int StaticEvalDuo(GameState *game) {
 bool triggerExit = false;
 
 void preMM() {
-  totalPos = 0;
+  totalMoves = 0;
   triggerExit = false;
 }
 
@@ -107,7 +107,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
     return Score(0);
   }
   if (depth == maxDepth) {
-    totalPos++;
+    totalMoves++;
     return StaticEval(&game);
   }
 
@@ -186,7 +186,7 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
     return 0;
   }
   if (depth == maxDepth) {
-    totalPos++;
+    totalMoves++;
     return StaticEvalDuo(&game);
   }
 

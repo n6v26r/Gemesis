@@ -142,7 +142,6 @@ struct GameState {
           nobles.set(noble, 0);
           player[currPlayer].nobles.set(noble);
           player[currPlayer].score += NOBLE_SCORE;
-          break;
         }
       }
       break;

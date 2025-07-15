@@ -3,7 +3,7 @@ project(Gemesis)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "build")
 set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address -g -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra")
 # Explicitly list the test source code and headers. The Catch header-only unit
 # test framework is stored in with the test source.
