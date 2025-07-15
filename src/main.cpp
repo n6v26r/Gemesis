@@ -23,22 +23,24 @@ int main() {
 
   Move m;
 
-  for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
-    GameState g = game;
-    preMM();
-    if (g.playerCnt != 2)
-      minimax(0, depth, g);
-    else
-      minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
-    if (!MMStatusOK()) {
-      logInfo("Reached EOT at depth: %d", depth);
-      break;
-    } else {
-      logArbiter("Depth: %d Evaluated: %d pos", depth, totalPos);
-      m = moves[0][bestMove[0]];
-    }
-  }
+  // for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
+  //   GameState g = game;
+  //   preMM();
+  //   if (g.playerCnt != 2)
+  //     minimax(0, depth, g);
+  //   else
+  //     minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
+  //   if (!MMStatusOK()) {
+  //     logInfo("Reached EOT at depth: %d", depth);
+  //     break;
+  //   } else {
+  //     logArbiter("Depth: %d Evaluated: %d pos", depth, totalPos);
+  //     m = moves[0][bestMove[0]];
+  //   }
+  // }
 
+  // MORE than 6 has a bug
+  minimaxDuo(0, 6, game, -INF, +INF, !game.currPlayer);
   m = moves[0][bestMove[0]];
   makeFinalMove(m);
 
