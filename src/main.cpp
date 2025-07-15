@@ -1,6 +1,7 @@
 #include "agent.h"
 #include "game.h"
 #include "log.h"
+#include "move.h"
 #include "types.h"
 #include "utils.h"
 #include <cassert>
@@ -26,15 +27,22 @@ int main() {
   for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
     GameState g = game;
     preMM();
+    int score;
     if (g.playerCnt != 2)
-      minimax(0, depth, g);
+      score = minimax(0, depth, g).get(game.currPlayer);
     else
-      minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
+      score = minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
     if (!MMStatusOK()) {
       logInfo("Timeout at: %d", depth);
       break;
     } else {
-      logArbiter("Depth: %d Evaluated: %d moves.", depth, totalMoves);
+      logArbiter("Depth: %d Evaluated: %d moves. Evaluation score: %d", depth,
+                 totalMoves, score);
+#ifdef DEBUG
+      for (int moveIdx = 0; moveIdx < moveCnt[0]; moveIdx++) {
+        logMove(moves[0][moveIdx]);
+      }
+#endif
       m = moves[0][bestMove[0]];
     }
   }

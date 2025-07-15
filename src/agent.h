@@ -84,6 +84,24 @@ inline void readGameState(GameState *g) {
   for (int p = 0; p < g->playerCnt; p++) {
     readPlayerState(&g->player[p]);
   }
+
+  // NOTE: Edge case:
+  // TODO: mabye treat this in a more elegant way
+  // FIX: A more simple way to do this is to only look at nobles in the eval
+  // func
+  // If I was eligible for more nobles at the same (but have only recived
+  // one) consider them all recived ---> this fixes undo fail on noble
+  // generation
+  for (int p = 0; p < g->playerCnt; p++) {
+    for (auto nbls = g->nobles; nbls; nbls.clearSmallest()) {
+      int noble = nbls.getSmallest();
+      if (g->player[p].shouldRecive(noble)) {
+        g->player[p].nobles.set(noble);
+        g->player[p].score += NOBLE_SCORE;
+        g->nobles.set(noble, 0);
+      }
+    }
+  }
 }
 
 inline void makeFinalMove(Move &m) {

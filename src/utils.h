@@ -21,8 +21,8 @@ inline double getTime() {
 // Minimax
 #define SEED 1
 #define MIN_MINIMAX_DEPTH 3
-#define MAX_MINIMAX_DEPTH 6
-#define MINIMAX_KILL_AFTER 9.0f
+#define MAX_MINIMAX_DEPTH 15
+#define MINIMAX_KILL_AFTER 3.0f
 
 // Static eval multipliers
 // NOTE: in here for fine-tuning

@@ -111,7 +111,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
     return StaticEval(&game);
   }
 
-  if (game.currPlayer == game.playerCnt - 1 &&
+  if (game.currPlayer == 0 &&
       game.player[game.currPlayer].score >= SCORE_ENDGAME) {
     return StaticEval(&game);
   }
@@ -160,8 +160,9 @@ Score minimax(int depth, int maxDepth, GameState &game) {
       }
     }
     if (!(game == save)) {
-      game.debug();
       save.debug();
+      game.debug();
+      logMove(move);
     }
     logAssert(game == save, "!EQ");
 #endif
@@ -190,8 +191,7 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
     return StaticEvalDuo(&game);
   }
 
-  if (game.currPlayer == game.playerCnt - 1 &&
-      game.player[game.currPlayer].score >= SCORE_ENDGAME) {
+  if (game.player[game.currPlayer].score >= SCORE_ENDGAME) {
     return StaticEvalDuo(&game);
   }
 
@@ -256,8 +256,9 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
       }
     }
     if (!(game == save)) {
-      game.debug();
       save.debug();
+      game.debug();
+      logMove(move);
     }
     logAssert(game == save, "!EQ");
 #endif

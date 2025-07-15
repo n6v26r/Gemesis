@@ -182,6 +182,16 @@ public:
     return addgold;
   }
 
+  bool shouldRecive(const int nobleIdx) {
+    bool ok = true;
+    for (int gem = 0;
+         gem < GEM_CNT && ok /*missusing for loops, send me to prison*/;
+         gem++) {
+      ok &= (bonusCnt[gem] >= NOBLE_CARDS[nobleIdx][gem]);
+    }
+    return ok;
+  }
+
   bool canBuy(const int cardIdx) { return needsGold(cardIdx) == 0; }
 
   void buy(int cardIdx, ChipSet &r) {

@@ -61,6 +61,10 @@ struct PlayerState {
 
   bool canBuy(int cardIdx) { return chipCnt.canBuy(cardIdx); }
 
+  bool shouldRecive(const int nobleIdx) {
+    return chipCnt.shouldRecive(nobleIdx);
+  }
+
   bool operator==(const PlayerState &other) {
     bool eq = this->score == other.score && this->cards == other.cards &&
               this->res == other.res && this->chipCnt == other.chipCnt;
@@ -127,6 +131,8 @@ struct GameState {
       cards.set(m.quant, 0);
       // NOTE: sorry for bad code:
 
+      // NOTE: TODO(FIX): If I meet the criteria for more nobles at the same
+      // time, consider them all aquired
       for (auto nbls = nobles; nbls; nbls.clearSmallest()) {
         int noble = nbls.getSmallest();
         bool ok = true;
@@ -190,7 +196,6 @@ struct GameState {
           player[currPlayer].score -= NOBLE_SCORE;
         }
       }
-      // TODO: nobles
       break;
     default:
       break;
