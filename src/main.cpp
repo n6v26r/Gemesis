@@ -23,25 +23,23 @@ int main() {
 
   Move m;
 
-  // for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
-  //   GameState g = game;
-  //   preMM();
-  //   if (g.playerCnt != 2)
-  //     minimax(0, depth, g);
-  //   else
-  //     minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
-  //   if (!MMStatusOK()) {
-  //     logInfo("Reached EOT at depth: %d", depth);
-  //     break;
-  //   } else {
-  //     logArbiter("Depth: %d Evaluated: %d pos", depth, totalPos);
-  //     m = moves[0][bestMove[0]];
-  //   }
-  // }
+  for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
+    GameState g = game;
+    preMM();
+    if (g.playerCnt != 2)
+      minimax(0, depth, g);
+    else
+      minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
+    if (!MMStatusOK()) {
+      logInfo("Reached EOT at depth: %d", depth);
+      break;
+    } else {
+      logArbiter("Depth: %d Evaluated: %d pos", depth, totalPos);
+      m = moves[0][bestMove[0]];
+    }
+  }
 
-  minimaxDuo(0, 6, game, -INF, +INF, !game.currPlayer);
   m = moves[0][bestMove[0]];
-  // logInfo("Evaluated: %d positions\n", totalPos);
   makeFinalMove(m);
 
   FILE *f = fopen("output.ok", "a");
@@ -50,9 +48,6 @@ int main() {
     fprintf(f, "1 0\n");
     break;
   case Action::TAKE_3_DIFF_GEMS:
-    if (m.quant != 3)
-      logWarn("Why u taking less than 3?? U stuupid??");
-
     fprintf(f, "1 %d ", m.quant);
     for (int i = 0; i < GEM_CNT; i++)
       if (m.data[i])

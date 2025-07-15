@@ -4,8 +4,6 @@
 #include "utils.h"
 
 #include <cassert>
-#include <exception>
-#include <pthread.h>
 #include <vector>
 
 #define INF 100'000'000
@@ -15,8 +13,10 @@ Move moves[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1][MAX_MOVES];
 int bestMove[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1];
 int moveCnt[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1];
 
+#ifdef DEBUG
 // NOTE: for debbugging purposes
 std::vector<Move> moveBacklog;
+#endif
 int totalPos = 0;
 
 struct Score {
@@ -48,7 +48,7 @@ int Eval(GameState *game, int player) {
   int score = 0;
 
   // TODO: extend this
-  if (game->player[player].score >= 15)
+  if (game->player[player].score >= SCORE_ENDGAME)
     return game->player[player].score * FUCKLOAD;
 
   // for (auto nobles = game->nobles; nobles; nobles.clearSmallest()) {
@@ -98,10 +98,11 @@ void preMM() {
 bool MMStatusOK() { return !triggerExit; }
 
 Score minimax(int depth, int maxDepth, GameState &game) {
-  static int xx = 0;
   if (getTime() >= MINIMAX_KILL_AFTER) {
+#ifdef DEBUG
     if (!triggerExit)
       logWarn("time: %lf", getTime());
+#endif
     triggerExit = true;
     return Score(0);
   }
@@ -111,7 +112,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
   }
 
   if (game.currPlayer == game.playerCnt - 1 &&
-      game.player[game.currPlayer].score >= 15) {
+      game.player[game.currPlayer].score >= SCORE_ENDGAME) {
     return StaticEval(&game);
   }
 
@@ -122,33 +123,48 @@ Score minimax(int depth, int maxDepth, GameState &game) {
   bestScore[game.currPlayer] = -INF;
   for (auto moveIdx = 0; moveIdx < moveCnt[depth]; moveIdx++) {
     auto &move = moves[depth][moveIdx];
+
+#ifdef DEBUG
     // NOTE: for debugging
     GameState save = game;
+#endif
 
     game.applyMove(moves[depth][moveIdx]);
-
+#ifdef DEBUG
     moveBacklog.push_back(move);
+#endif
+
     game.currPlayer = game.nextPlayer();
 
     Score score = minimax(depth + 1, maxDepth, game);
     game.currPlayer = game.prevPlayer();
+#ifdef DEBUG
     moveBacklog.pop_back();
+#endif
+
     game.unapplyMove(moves[depth][moveIdx]);
 
-    logAssert(game == save, "!EQ");
-
+#ifdef DEBUG
     // DEBUGGING:
-    int total = 0;
-    for (int i = 0; i < CHIP_CNT; i++) {
-      total += game.player[0].chipCnt[i];
+    for (int p = 0; p < game.playerCnt; p++) {
+      int total = 0;
+      for (int i = 0; i < CHIP_CNT; i++) {
+        total += game.player[p].chipCnt[i];
+      }
+      if (total != game.player[p].chipCnt.totalChipCnt) {
+        logInfo("DEPTH: %d\n", depth);
+        save.debug();
+        game.debug();
+        logMove(move);
+        logErr("HERE!!!");
+      }
     }
-    if (total != game.player[0].chipCnt.totalChipCnt) {
-      logInfo("DEPTH: %d\n", depth);
-      save.debug();
+    if (!(game == save)) {
       game.debug();
-      logMove(move);
-      logErr("HERE!!!");
+      save.debug();
     }
+    logAssert(game == save, "!EQ");
+#endif
 
     if (score.get(game.currPlayer) > bestScore.get(game.currPlayer)) {
       bestScore = score;
@@ -162,8 +178,10 @@ Score minimax(int depth, int maxDepth, GameState &game) {
 int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
                bool maximize) {
   if (getTime() >= MINIMAX_KILL_AFTER) {
+#ifdef DEBUG
     if (!triggerExit)
       logWarn("time: %lf", getTime());
+#endif
     triggerExit = true;
     return 0;
   }
@@ -173,31 +191,33 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
   }
 
   if (game.currPlayer == game.playerCnt - 1 &&
-      game.player[game.currPlayer].score >= 15) {
+      game.player[game.currPlayer].score >= SCORE_ENDGAME) {
     return StaticEvalDuo(&game);
   }
 
   moveCnt[depth] = 0;
   getMoves(game, moves[depth], moveCnt[depth]);
 
-  // if (depth == 0)
-  //   for (auto moveIdx = 0; moveIdx < moveCnt[depth]; moveIdx++) {
-  //     logMove(moves[depth][moveIdx]);
-  //   }
-
   int bestScore = (maximize ? -INF : INF);
   for (auto moveIdx = 0; moveIdx < moveCnt[depth]; moveIdx++) {
     auto &move = moves[depth][moveIdx];
+
+#ifdef DEBUG
     // NOTE: for debugging
     GameState save = game;
+#endif
 
     game.applyMove(moves[depth][moveIdx]);
+#ifdef DEBUG
     moveBacklog.push_back(move);
+#endif
     game.currPlayer = game.nextPlayer();
 
     int score = minimaxDuo(depth + 1, maxDepth, game, a, b, !maximize);
     game.currPlayer = game.prevPlayer();
+#ifdef DEBUG
     moveBacklog.pop_back();
+#endif
     game.unapplyMove(moves[depth][moveIdx]);
 
     if (maximize) {
@@ -220,20 +240,27 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
       b = MIN(bestScore, b);
     }
 
+#ifdef DEBUG
     // DEBUGGING:
-    int total = 0;
-    for (int i = 0; i < CHIP_CNT; i++) {
-      total += game.player[0].chipCnt[i];
+    for (int p = 0; p < game.playerCnt; p++) {
+      int total = 0;
+      for (int i = 0; i < CHIP_CNT; i++) {
+        total += game.player[p].chipCnt[i];
+      }
+      if (total != game.player[p].chipCnt.totalChipCnt) {
+        logInfo("DEPTH: %d\n", depth);
+        save.debug();
+        game.debug();
+        logMove(move);
+        logErr("HERE!!!");
+      }
     }
-    if (total != game.player[0].chipCnt.totalChipCnt) {
-      logInfo("DEPTH: %d\n", depth);
-      save.debug();
+    if (!(game == save)) {
       game.debug();
-      logMove(move);
-      logErr("HERE!!!");
+      save.debug();
     }
-
     logAssert(game == save, "!EQ");
+#endif
   }
 
   return bestScore;

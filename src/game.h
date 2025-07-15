@@ -127,23 +127,22 @@ struct GameState {
       cards.set(m.quant, 0);
       // NOTE: sorry for bad code:
 
-      for (int noble = NOBLE_CNT; noble > 0; noble--) {
-        if (nobles.get(noble)) {
-          bool ok = true;
-          for (int gem = 0; gem < GEM_CNT; gem++) {
-            if (player[currPlayer].chipCnt.getBonus(gem) <
-                NOBLE_CARDS[noble][gem]) {
-              ok = false;
-              break;
-            }
-          }
-
-          if (ok) {
-            nobles.set(noble, 0);
-            player[currPlayer].nobles.set(noble);
-            player[currPlayer].score += NOBLE_SCORE;
+      for (auto nbls = nobles; nbls; nbls.clearSmallest()) {
+        int noble = nbls.getSmallest();
+        bool ok = true;
+        for (int gem = 0; gem < GEM_CNT; gem++) {
+          if (player[currPlayer].chipCnt.getBonus(gem) <
+              NOBLE_CARDS[noble][gem]) {
+            ok = false;
             break;
           }
+        }
+
+        if (ok) {
+          nobles.set(noble, 0);
+          player[currPlayer].nobles.set(noble);
+          player[currPlayer].score += NOBLE_SCORE;
+          break;
         }
       }
       break;
@@ -175,22 +174,21 @@ struct GameState {
       cards.set(m.quant, !m.data[GEM_CNT]);
 
       // NOTE: sorry for bad code:
-      for (int noble = NOBLE_CNT; noble > 0; noble--) {
-        if (player[currPlayer].nobles.get(noble)) {
-          bool ok = true;
-          for (int gem = 0; gem < GEM_CNT; gem++) {
-            if (player[currPlayer].chipCnt.getBonus(gem) <
-                NOBLE_CARDS[noble][gem]) {
-              ok = false;
-              break;
-            }
+      for (auto nbls = player[currPlayer].nobles; nbls; nbls.clearSmallest()) {
+        int noble = nbls.getSmallest();
+        bool ok = true;
+        for (int gem = 0; gem < GEM_CNT; gem++) {
+          if (player[currPlayer].chipCnt.getBonus(gem) <
+              NOBLE_CARDS[noble][gem]) {
+            ok = false;
+            break;
           }
+        }
 
-          if (!ok) {
-            nobles.set(noble);
-            player[currPlayer].nobles.set(noble, 0);
-            player[currPlayer].score -= NOBLE_SCORE;
-          }
+        if (!ok) {
+          nobles.set(noble);
+          player[currPlayer].nobles.set(noble, 0);
+          player[currPlayer].score -= NOBLE_SCORE;
         }
       }
       // TODO: nobles

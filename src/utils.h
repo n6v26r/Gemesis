@@ -14,14 +14,15 @@ inline double getTime() {
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+#define DEBUG 
+
 // CATEGORY: Bot params
 
 // Minimax
 #define SEED 1
 #define MIN_MINIMAX_DEPTH 3
-#define MAX_MINIMAX_DEPTH 12
-#define TOTAL_TIME 10
-#define MINIMAX_KILL_AFTER 1.0f
+#define MAX_MINIMAX_DEPTH 7
+#define MINIMAX_KILL_AFTER 0.5f
 
 // Static eval multipliers
 // NOTE: in here for fine-tuning
@@ -40,6 +41,8 @@ inline double getTime() {
 #define MAX_HOLD_RES 3
 
 #define MAX_PLAYER_CNT 4
+
+#define SCORE_ENDGAME 15
 
 // NOTE: numar prea mare
 #define MAX_MOVES 100

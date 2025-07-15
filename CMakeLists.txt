@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(Gemesis)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "build")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Ofast")
-
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra")
 # Explicitly list the test source code and headers. The Catch header-only unit
 # test framework is stored in with the test source.
 set(CMake_SRC
@@ -11,8 +12,11 @@ set(CMake_SRC
 )
 set(CMake_HEADER
   src/utils.h
+  src/settings.h
   src/agent.h
   src/log.h
+  src/move.h
+  src/types.h
 )
 
 # set(CMake_GEN_SRC

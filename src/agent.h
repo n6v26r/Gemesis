@@ -43,8 +43,10 @@ inline void readPlayerState(PlayerState *p) {
   for (int i = 0; i < nobleCnt; i++) {
     int noble;
     scanf("%d", &noble);
-    p->nobles.set(noble);
-    p->score += NOBLE_SCORE;
+    if (noble > 0) {
+      p->nobles.set(noble);
+      p->score += NOBLE_SCORE;
+    }
   }
 }
 
@@ -66,7 +68,8 @@ inline void readGameState(GameState *g) {
     for (int i = 0; i < VIS_PER_PACK; i++) {
       int card;
       scanf("%d", &card);
-      g->cards.set(card);
+      if (card > 0)
+        g->cards.set(card);
     }
   }
 
@@ -89,9 +92,6 @@ inline void makeFinalMove(Move &m) {
     printf("1 0\n");
     break;
   case Action::TAKE_3_DIFF_GEMS:
-    if (m.quant != 3)
-      logWarn("Why u taking less than 3?? U stuupid??");
-
     printf("1 %d ", m.quant);
     for (int i = 0; i < GEM_CNT; i++)
       if (m.data[i])
