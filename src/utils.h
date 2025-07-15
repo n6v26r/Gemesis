@@ -14,7 +14,7 @@ inline double getTime() {
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-#define DEBUG 
+// #define DEBUG 
 
 // CATEGORY: Bot params
 
@@ -22,7 +22,7 @@ inline double getTime() {
 #define SEED 1
 #define MIN_MINIMAX_DEPTH 3
 #define MAX_MINIMAX_DEPTH 15
-#define MINIMAX_KILL_AFTER 3.0f
+#define MINIMAX_KILL_AFTER 0.2f
 
 // Static eval multipliers
 // NOTE: in here for fine-tuning

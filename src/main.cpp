@@ -1,7 +1,5 @@
 #include "agent.h"
 #include "game.h"
-#include "log.h"
-#include "move.h"
 #include "types.h"
 #include "utils.h"
 #include <cassert>
@@ -38,16 +36,11 @@ int main() {
     } else {
       logArbiter("Depth: %d Evaluated: %d moves. Evaluation score: %d", depth,
                  totalMoves, score);
-#ifdef DEBUG
-      for (int moveIdx = 0; moveIdx < moveCnt[0]; moveIdx++) {
-        logMove(moves[0][moveIdx]);
-      }
-#endif
       m = moves[0][bestMove[0]];
     }
   }
 
-  m = moves[0][bestMove[0]];
+  // minimaxDuo(0, 7, game, -INF, +INF, !game.currPlayer);
   makeFinalMove(m);
 
   FILE *f = fopen("output.ok", "a");

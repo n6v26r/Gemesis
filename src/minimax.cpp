@@ -9,9 +9,9 @@
 #define INF 100'000'000
 #define FUCKLOAD 1'000'000
 
-Move moves[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1][MAX_MOVES];
-int bestMove[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1];
-int moveCnt[MAX_MINIMAX_DEPTH * MAX_PLAYER_CNT + 1];
+Move moves[MAX_MINIMAX_DEPTH + 1][MAX_MOVES];
+int bestMove[MAX_MINIMAX_DEPTH + 1];
+int moveCnt[MAX_MINIMAX_DEPTH + 1];
 
 #ifdef DEBUG
 // NOTE: for debbugging purposes
@@ -111,8 +111,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
     return StaticEval(&game);
   }
 
-  if (game.currPlayer == 0 &&
-      game.player[game.currPlayer].score >= SCORE_ENDGAME) {
+  if (game.player[game.currPlayer].score >= SCORE_ENDGAME) {
     return StaticEval(&game);
   }
 
