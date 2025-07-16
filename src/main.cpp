@@ -40,7 +40,6 @@ int main() {
     }
   }
 
-  // minimaxDuo(0, 7, game, -INF, +INF, !game.currPlayer);
   makeFinalMove(m);
 
   FILE *f = fopen("output.ok", "a");
