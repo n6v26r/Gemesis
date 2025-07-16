@@ -6,7 +6,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+#ifdef USE_MINIMAX
 #include "minimax.cpp"
+#else
+#include "mcts.cpp"
+#endif
 
 void init() {
   getTime();
@@ -18,10 +22,12 @@ int main() {
   GameState game;
   readGameState(&game);
 
+#ifdef DEBUG
   game.debug();
+#endif
 
   Move m;
-
+#ifdef USE_MINIMAX
   for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
     GameState g = game;
     preMM();
@@ -31,7 +37,7 @@ int main() {
     else
       score = minimaxDuo(0, depth, g, -INF, +INF, !game.currPlayer);
     if (!MMStatusOK()) {
-      logInfo("Timeout at: %d", depth);
+      logInfo("Timeout at depth: %d", depth);
       break;
     } else {
       logArbiter("Depth: %d Evaluated: %d moves. Evaluation score: %d", depth,
@@ -39,6 +45,10 @@ int main() {
       m = moves[0][bestMove[0]];
     }
   }
+#else
+  MCTS MonteCarlo;
+  m = MonteCarlo.getBestMove(game);
+#endif
 
   makeFinalMove(m);
 

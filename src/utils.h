@@ -2,8 +2,8 @@
 #include <chrono>
 
 inline double getTime() {
-  static auto start = std::chrono::system_clock::now();
-  auto now = std::chrono::system_clock::now();
+  static auto start = std::chrono::high_resolution_clock::now();
+  auto now = std::chrono::high_resolution_clock::now();
   double time_taken =
       std::chrono::duration_cast<std::chrono::nanoseconds>(now - start).count();
 
@@ -15,18 +15,26 @@ inline double getTime() {
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #define DEBUG
+// #define USE_MINIMAX
 
 // CATEGORY: Bot params
 
 // Minimax
 #define SEED 1
-#define MIN_MINIMAX_DEPTH 1
+#define MIN_MINIMAX_DEPTH 4
 #define MAX_MINIMAX_DEPTH 12
-#define MINIMAX_KILL_AFTER 10.0f
+#define MINIMAX_KILL_AFTER 1.0f
 
 // Static eval multipliers
 // NOTE: in here for fine-tuning
 #include "settings.h"
+
+// MCTS
+#define MCTS_EXPLOR_MUL 1.5
+#define MCTS_KILL_AFTER 1.0f
+#define MCTS_NODE_ROLLOUTS 10
+#define MCTS_FAILSAVE_STEPS 10000000
+#define MCTS_SIM_MAX_MOVES 200 /*rounds * 2 */
 
 // CATEGORY: Game constants
 #define VIS_PER_PACK 4

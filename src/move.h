@@ -71,7 +71,6 @@ inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   }
 
   // Action 3 (Reserve)
-  // NOTE: mabye optimize this (and action 4)
   auto placeholder =
       game.player[game.currPlayer].res.count() +
               game.player[game.currPlayer].secretRes <

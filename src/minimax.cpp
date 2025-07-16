@@ -98,7 +98,7 @@ void preMM() {
 bool MMStatusOK() { return !triggerExit; }
 
 Score minimax(int depth, int maxDepth, GameState &game) {
-  if (getTime() >= MINIMAX_KILL_AFTER) {
+  if (totalMoves % 160000 == 0 && getTime() >= MINIMAX_KILL_AFTER) {
 #ifdef DEBUG
     if (!triggerExit)
       logWarn("time: %lf", getTime());
@@ -177,7 +177,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
 
 int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
                bool maximize) {
-  if (getTime() >= MINIMAX_KILL_AFTER) {
+  if (totalMoves % 16000 == 0 && getTime() >= MINIMAX_KILL_AFTER) {
 #ifdef DEBUG
     if (!triggerExit)
       logWarn("time: %lf", getTime());
