@@ -222,7 +222,7 @@ struct GameState {
   bool isEndGame() {
     bool yes = (this->currPlayer == this->playerCnt - 1);
     if (!yes)
-      return yes;
+      return false;
 
     yes = false;
     for (int p = 0; p < this->playerCnt; p++) {
@@ -230,4 +230,14 @@ struct GameState {
     }
     return yes;
   };
+
+  bool isInGame(int cardIdx) {
+    if (cards.get(cardIdx))
+      return true;
+    for (int p = 0; p < this->playerCnt; p++)
+      if (player[p].cards.get(cardIdx) || player[p].res.get(cardIdx))
+        return true;
+
+    return false;
+  }
 };

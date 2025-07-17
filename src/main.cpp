@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef USE_MINIMAX
 #include "minimax.cpp"
@@ -43,6 +44,7 @@ int main() {
       logArbiter("Depth: %d Evaluated: %d moves. Evaluation score: %d", depth,
                  totalMoves, score);
       m = moves[0][bestMove[0]];
+      std::memcpy(killerMove, newKillerMove, sizeof(Move) * depth);
     }
   }
 #else

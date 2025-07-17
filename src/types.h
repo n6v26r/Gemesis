@@ -134,7 +134,7 @@ struct ChipSet {
     totalChipCnt += val;
   }
 
-  const byte operator[](int idx) const {
+  byte operator[](int idx) const {
     return (idx < GEM_CNT ? gemCnt[idx] : gold);
   }
 };

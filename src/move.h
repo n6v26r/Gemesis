@@ -8,6 +8,44 @@
 inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   moveCnt = 0;
 
+  // NOTE: try reordering to improve alpha beta pruninig
+
+  // Action 4
+
+  // Visible on the table
+  for (auto cards = game.cards; cards; cards.clearSmallest()) {
+    int cardnum = cards.getSmallest();
+    if (game.player[game.currPlayer].canBuy(cardnum)) {
+      moveArr[moveCnt++] =
+          Move{BUY_CARD, cardnum,
+               (int[]){
+                   game.player[game.currPlayer].chipCnt[0],
+                   game.player[game.currPlayer].chipCnt[1],
+                   game.player[game.currPlayer].chipCnt[2],
+                   game.player[game.currPlayer].chipCnt[3],
+                   game.player[game.currPlayer].chipCnt[4],
+                   0,
+               }}; // keep gem number in order to correctly undo move
+    }
+  }
+
+  // Reserved
+  for (auto cards = game.player[game.currPlayer].res; cards;
+       cards.clearSmallest()) {
+    int cardnum = cards.getSmallest();
+    if (game.player[game.currPlayer].canBuy(cardnum)) {
+      moveArr[moveCnt++] = Move{BUY_CARD, cardnum,
+                                (int[]){
+                                    game.player[game.currPlayer].chipCnt[0],
+                                    game.player[game.currPlayer].chipCnt[1],
+                                    game.player[game.currPlayer].chipCnt[2],
+                                    game.player[game.currPlayer].chipCnt[3],
+                                    game.player[game.currPlayer].chipCnt[4],
+                                    1,
+                                }};
+    }
+  }
+
   // Action 1 or 2
   int gemsTypes = 0;
   for (int gem = 0; gem < GEM_CNT; gem++) {
@@ -80,42 +118,6 @@ inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
       moveArr[moveCnt++] = Move{
           RES_CARD, cardnum, (int[]){0, 0, 0, 0, 0, game.chipCnt[GEM_CNT] > 0}};
     };
-
-  // Action 4
-
-  // Visible on the table
-  for (auto cards = game.cards; cards; cards.clearSmallest()) {
-    int cardnum = cards.getSmallest();
-    if (game.player[game.currPlayer].canBuy(cardnum)) {
-      moveArr[moveCnt++] =
-          Move{BUY_CARD, cardnum,
-               (int[]){
-                   game.player[game.currPlayer].chipCnt[0],
-                   game.player[game.currPlayer].chipCnt[1],
-                   game.player[game.currPlayer].chipCnt[2],
-                   game.player[game.currPlayer].chipCnt[3],
-                   game.player[game.currPlayer].chipCnt[4],
-                   0,
-               }}; // keep gem number in order to correctly undo move
-    }
-  }
-
-  // Reserved
-  for (auto cards = game.player[game.currPlayer].res; cards;
-       cards.clearSmallest()) {
-    int cardnum = cards.getSmallest();
-    if (game.player[game.currPlayer].canBuy(cardnum)) {
-      moveArr[moveCnt++] = Move{BUY_CARD, cardnum,
-                                (int[]){
-                                    game.player[game.currPlayer].chipCnt[0],
-                                    game.player[game.currPlayer].chipCnt[1],
-                                    game.player[game.currPlayer].chipCnt[2],
-                                    game.player[game.currPlayer].chipCnt[3],
-                                    game.player[game.currPlayer].chipCnt[4],
-                                    1,
-                                }};
-    }
-  }
 
   if (moveCnt == 0) {
     moveArr[moveCnt++] = {TAKE_3_DIFF_GEMS, 0, {}};
