@@ -7,10 +7,8 @@
 
 inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   moveCnt = 0;
-  // logInfo(">Generating moves...");
-  // Action 1 or 2
-  // TODO: Rewrite this
 
+  // Action 1 or 2
   int gemsTypes = 0;
   for (int gem = 0; gem < GEM_CNT; gem++) {
     gemsTypes += (game.chipCnt[gem] > 0);
@@ -19,7 +17,6 @@ inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   int chips = MIN(
       3, MIN(MAX_HOLD_CHIPS - game.player[game.currPlayer].chipCnt.totalChipCnt,
              gemsTypes));
-  // logInfo(">Can take: %d chips\n", chips);
   switch (chips) {
   case 3:
     for (int i = 0; i < GEM_CNT; i++) {
@@ -65,7 +62,7 @@ inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   if (game.player[game.currPlayer].chipCnt.totalChipCnt + 2 <= MAX_HOLD_CHIPS) {
     for (int i = 0; i < GEM_CNT; i++) {
       if (game.chipCnt[i] >= 4) {
-        moveArr[moveCnt++] = Move{TAKE_2_SAME_GEMS, i};
+        moveArr[moveCnt++] = Move{TAKE_2_SAME_GEMS, i, {}};
       }
     }
   }
@@ -121,7 +118,7 @@ inline void getMoves(GameState &game, Move *moveArr, int &moveCnt) {
   }
 
   if (moveCnt == 0) {
-    moveArr[moveCnt++] = {TAKE_3_DIFF_GEMS, 0};
+    moveArr[moveCnt++] = {TAKE_3_DIFF_GEMS, 0, {}};
   }
 }
 

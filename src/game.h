@@ -218,4 +218,16 @@ struct GameState {
   int prevPlayer() {
     return (this->playerCnt + this->currPlayer - 1) % this->playerCnt;
   }
+
+  bool isEndGame() {
+    bool yes = (this->currPlayer == this->playerCnt - 1);
+    if (!yes)
+      return yes;
+
+    yes = false;
+    for (int p = 0; p < this->playerCnt; p++) {
+      yes |= (this->player[p].score >= SCORE_ENDGAME);
+    }
+    return yes;
+  };
 };

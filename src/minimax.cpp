@@ -48,7 +48,7 @@ int Eval(GameState *game, int player) {
   int score = 0;
 
   // TODO: extend this
-  if (game->player[player].score >= SCORE_ENDGAME)
+  if (game->isEndGame())
     return game->player[player].score * FUCKLOAD;
 
   // for (auto nobles = game->nobles; nobles; nobles.clearSmallest()) {
@@ -190,7 +190,7 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
     return StaticEvalDuo(&game);
   }
 
-  if (game.player[game.currPlayer].score >= SCORE_ENDGAME) {
+  if (game.isEndGame()) {
     return StaticEvalDuo(&game);
   }
 

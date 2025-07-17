@@ -14,8 +14,8 @@ inline double getTime() {
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-#define DEBUG
-// #define USE_MINIMAX
+// #define DEBUG
+#define USE_MINIMAX
 
 // CATEGORY: Bot params
 
@@ -23,18 +23,18 @@ inline double getTime() {
 #define SEED 1
 #define MIN_MINIMAX_DEPTH 4
 #define MAX_MINIMAX_DEPTH 12
-#define MINIMAX_KILL_AFTER 1.0f
+#define MINIMAX_KILL_AFTER 2.0f
 
 // Static eval multipliers
 // NOTE: in here for fine-tuning
 #include "settings.h"
 
 // MCTS
-#define MCTS_EXPLOR_MUL 1.5
-#define MCTS_KILL_AFTER 1.0f
+#define MCTS_EXPLOR_MUL 1.41
+#define MCTS_KILL_AFTER 2.0f
 #define MCTS_NODE_ROLLOUTS 10
-#define MCTS_FAILSAVE_STEPS 10000000
-#define MCTS_SIM_MAX_MOVES 200 /*rounds * 2 */
+#define MCTS_FAILSAVE_STEPS 100000000
+#define MCTS_SIM_MAX_MOVES 100 /*rounds * 2 */
 
 // CATEGORY: Game constants
 #define VIS_PER_PACK 4

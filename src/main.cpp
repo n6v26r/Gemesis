@@ -26,7 +26,7 @@ int main() {
   game.debug();
 #endif
 
-  Move m;
+  Move m = {NO_ACTION, 0, {}};
 #ifdef USE_MINIMAX
   for (int depth = MIN_MINIMAX_DEPTH; depth <= MAX_MINIMAX_DEPTH; depth++) {
     GameState g = game;
@@ -52,6 +52,7 @@ int main() {
 
   makeFinalMove(m);
 
+  return 0;
   FILE *f = fopen("output.ok", "a");
   switch (m.code) {
   case Action::NO_ACTION:

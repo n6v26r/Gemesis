@@ -1,3 +1,4 @@
+#include "agent.h"
 #include "game.h"
 #include "log.h"
 #include "move.h"
@@ -30,25 +31,13 @@ struct Score {
   double &operator[](int idx) { return wins[idx]; }
 };
 
-bool isEndGame(GameState &game) {
-  bool yes = (game.currPlayer == game.playerCnt - 1);
-  if (!yes)
-    return yes;
-
-  yes = false;
-  for (int p = 0; p < game.playerCnt; p++) {
-    yes |= (game.player[p].score >= SCORE_ENDGAME);
-  }
-  return yes;
-};
-
 bool isNone(Move &m) {
   return m.code == Action::NO_ACTION ||
          (m.code == Action::TAKE_3_DIFF_GEMS && !m.quant);
 }
 
 Score Eval(GameState &game) {
-  if (!isEndGame(game)) {
+  if (!game.isEndGame()) {
     Score s;
     for (int p = 0; p < game.playerCnt; p++) {
       if (p == game.currPlayer)
@@ -137,7 +126,7 @@ struct Node {
     for (int r = 0; r < MCTS_NODE_ROLLOUTS; r++) {
       GameState g = game;
       int movesNum = 0;
-      while (!isEndGame(g) && movesNum < MCTS_SIM_MAX_MOVES) {
+      while (!g.isEndGame() && movesNum < MCTS_SIM_MAX_MOVES) {
         Move m = getRandMove(g);
         g.applyMove(m);
         while (g.cards.count() < VIS_PER_PACK * PACK_CNT) {
@@ -177,13 +166,17 @@ struct Node {
 struct MCTS {
   int steps = 0;
   Node *root;
+#ifdef DEBUG
   std::vector<Move> moveBacklog;
+#endif
 
   MCTS() { root = new Node(NULL); }
 
   Node *select(GameState &game) {
     Node *nd = root;
+#ifdef DEBUG
     moveBacklog = {};
+#endif
     while (nd->vis != 0) {
 
       // Leaf node evaled but not yet expanded
@@ -194,7 +187,9 @@ struct MCTS {
 
       auto childIdx = nd->chooseChild(game.currPlayer);
       game.applyMove(nd->moves[childIdx]);
+#ifdef DEBUG
       moveBacklog.push_back(nd->moves[childIdx]);
+#endif
       game.currPlayer = game.nextPlayer();
       nd = nd->child[childIdx];
     }
@@ -241,6 +236,7 @@ struct MCTS {
         m = root->moves[c];
       }
     }
+    logArbiter("Best win probability: %lf", bestWinProb);
     return m;
   }
 };
