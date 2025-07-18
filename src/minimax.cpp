@@ -15,22 +15,18 @@ Move moves[MAX_MINIMAX_DEPTH + 1][MAX_MOVES];
 int bestMove[MAX_MINIMAX_DEPTH + 1];
 int moveCnt[MAX_MINIMAX_DEPTH + 1];
 
-// Best move at last iteration
-Move killerMove[MAX_MINIMAX_DEPTH + 1];
-Move newKillerMove[MAX_MINIMAX_DEPTH + 1];
-
 int totalMoves = 0;
 
-struct Score {
+struct MctsScore {
   int playerCnt;
   int score[MAX_PLAYER_CNT];
-  Score(int playerCnt) { this->playerCnt = playerCnt; }
-  Score(int playerCnt, int val) {
+  MctsScore(int playerCnt) { this->playerCnt = playerCnt; }
+  MctsScore(int playerCnt, int val) {
     this->playerCnt = playerCnt;
     for (int p = 0; p < playerCnt; p++)
       score[p] = val;
   }
-  Score() { playerCnt = 0; }
+  MctsScore() { playerCnt = 0; }
 
   int get(int player) {
     int s = score[player];
@@ -74,8 +70,8 @@ int Eval(GameState *game, int player) {
   return score;
 }
 
-Score StaticEval(GameState *game) {
-  Score score(game->playerCnt);
+MctsScore StaticEval(GameState *game) {
+  MctsScore score(game->playerCnt);
   for (int p = 0; p < game->playerCnt; p++)
     score[p] = Eval(game, p);
 
@@ -83,7 +79,7 @@ Score StaticEval(GameState *game) {
 }
 
 int StaticEvalDuo(GameState *game) {
-  Score score(game->playerCnt);
+  MctsScore score(game->playerCnt);
   for (int p = 0; p < game->playerCnt; p++)
     score[p] = Eval(game, p);
 
@@ -99,14 +95,14 @@ void preMM() {
 
 bool MMStatusOK() { return !triggerExit; }
 
-Score minimax(int depth, int maxDepth, GameState &game) {
+MctsScore minimax(int depth, int maxDepth, GameState &game) {
   if (totalMoves % 16000 == 0 && getTime() >= MINIMAX_KILL_AFTER) {
 #ifdef DEBUG
     if (!triggerExit)
       logWarn("time: %lf", getTime());
 #endif
     triggerExit = true;
-    return Score(0);
+    return MctsScore(0);
   }
   if (depth == maxDepth) {
     totalMoves++;
@@ -120,7 +116,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
   moveCnt[depth] = 0;
   getMoves(game, moves[depth], moveCnt[depth]);
 
-  Score bestScore(game.playerCnt, INF);
+  MctsScore bestScore(game.playerCnt, INF);
   bestScore[game.currPlayer] = -INF;
   for (auto moveIdx = 0; moveIdx < moveCnt[depth]; moveIdx++) {
 #ifdef DEBUG
@@ -131,7 +127,7 @@ Score minimax(int depth, int maxDepth, GameState &game) {
     game.applyMove(moves[depth][moveIdx]);
     game.currPlayer = game.nextPlayer();
 
-    Score score = minimax(depth + 1, maxDepth, game);
+    MctsScore score = minimax(depth + 1, maxDepth, game);
     game.currPlayer = game.prevPlayer();
     game.unapplyMove(moves[depth][moveIdx]);
 
@@ -189,11 +185,6 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
   moveCnt[depth] = 0;
   getMoves(game, moves[depth], moveCnt[depth]);
 
-  if (killerMove[depth].code != NO_ACTION) {
-    moves[depth][moveCnt[depth]++] = killerMove[depth];
-    std::swap(moves[depth][moveCnt[depth] - 1], moves[depth][0]);
-  }
-
   int bestScore = (maximize ? -INF : INF);
   for (auto moveIdx = 0; moveIdx < moveCnt[depth]; moveIdx++) {
 #ifdef DEBUG
@@ -211,7 +202,6 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
       if (score > bestScore) {
         bestScore = score;
         bestMove[depth] = moveIdx;
-        newKillerMove[depth] = moves[depth][moveIdx];
       }
       if (bestScore >= b) {
         break;
@@ -221,7 +211,6 @@ int minimaxDuo(int depth, int maxDepth, GameState &game, int a, int b,
       if (score < bestScore) {
         bestScore = score;
         bestMove[depth] = moveIdx;
-        newKillerMove[depth] = moves[depth][moveIdx];
       }
       if (bestScore <= a) {
         break;

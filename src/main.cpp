@@ -3,9 +3,7 @@
 #include "types.h"
 #include "utils.h"
 #include <cassert>
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
 #ifdef USE_MINIMAX
 #include "minimax.cpp"
@@ -44,7 +42,6 @@ int main() {
       logArbiter("Depth: %d Evaluated: %d moves. Evaluation score: %d", depth,
                  totalMoves, score);
       m = moves[0][bestMove[0]];
-      std::memcpy(killerMove, newKillerMove, sizeof(Move) * depth);
     }
   }
 #else
@@ -53,30 +50,6 @@ int main() {
 #endif
 
   makeFinalMove(m);
-
-  return 0;
-  FILE *f = fopen("output.ok", "a");
-  switch (m.code) {
-  case Action::NO_ACTION:
-    fprintf(f, "1 0\n");
-    break;
-  case Action::TAKE_3_DIFF_GEMS:
-    fprintf(f, "1 %d ", m.quant);
-    for (int i = 0; i < GEM_CNT; i++)
-      if (m.data[i])
-        fprintf(f, "%d ", i);
-    fprintf(f, "\n");
-    break;
-  case Action::TAKE_2_SAME_GEMS:
-    fprintf(f, "2 %d\n", m.quant);
-    break;
-  case Action::RES_CARD:
-    fprintf(f, "3 %d\n", m.quant);
-    break;
-  case Action::BUY_CARD:
-    fprintf(f, "4 %d\n", m.quant);
-    break;
-  }
 
   return 0;
 }

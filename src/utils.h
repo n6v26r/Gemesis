@@ -15,13 +15,13 @@ inline double getTime() {
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 // #define DEBUG
-#define USE_MINIMAX
+// #define USE_MINIMAX
 
 // CATEGORY: Bot params
 
 // Minimax
 #define SEED 1
-#define MIN_MINIMAX_DEPTH 4
+#define MIN_MINIMAX_DEPTH 5
 #define MAX_MINIMAX_DEPTH 12
 #define MINIMAX_KILL_AFTER 2.0f
 
@@ -93,3 +93,15 @@ const int NOBLE_CARDS[NOBLE_CNT + 1][GEM_CNT] = {
     {0, 0, 0, 4, 4},      {4, 0, 0, 0, 4}, {3, 3, 3, 0, 0}, {0, 3, 3, 3, 0},
     {0, 0, 3, 3, 3},      {3, 0, 0, 3, 3}, {3, 3, 0, 0, 3},
 };
+
+// const int LOWER_LVL_CARD_NUM[PACK_CNT] = {
+//     1,
+//     41,
+//     71
+// };
+
+// const int CARDS_WITH_LEVEL[PACK_CNT] = {
+//     40,
+//     30,
+//     20
+// };

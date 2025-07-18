@@ -1,6 +1,5 @@
 #include "agent.h"
 #include "game.h"
-#include "log.h"
 #include "move.h"
 #include "types.h"
 #include "utils.h"
@@ -10,19 +9,22 @@
 #include <cstdlib>
 #include <cstring>
 #include <math.h>
+#ifdef DEBUG
+#include "log.h"
 #include <vector>
+#endif
 
 #define INF 100'000'000
 
-struct Score {
+struct MctsScore {
   double wins[MAX_PLAYER_CNT];
-  Score() {
+  MctsScore() {
     for (int p = 0; p < MAX_PLAYER_CNT; p++) {
       wins[p] = 0;
     }
   }
 
-  void operator+=(const Score &other) {
+  void operator+=(const MctsScore &other) {
     for (int p = 0; p < MAX_PLAYER_CNT; p++) {
       wins[p] += other.wins[p];
     }
@@ -36,9 +38,9 @@ bool isNone(Move &m) {
          (m.code == Action::TAKE_3_DIFF_GEMS && !m.quant);
 }
 
-Score Eval(GameState &game) {
+MctsScore MctsEval(GameState &game) {
   if (!game.isEndGame()) {
-    Score s;
+    MctsScore s;
     for (int p = 0; p < game.playerCnt; p++) {
       if (p == game.currPlayer)
         continue;
@@ -47,7 +49,7 @@ Score Eval(GameState &game) {
     return s;
   }
 
-  Score score;
+  MctsScore score;
   struct EvalInfo {
     int score;
     int cards;
@@ -102,7 +104,7 @@ Move getRandMove(GameState &game) {
 
 struct Node {
   int vis = 0;
-  Score score;
+  MctsScore score;
   Move move;
   Node *parent;
   Node *child[MAX_MOVES];
@@ -121,8 +123,8 @@ struct Node {
     }
   }
 
-  Score rollOut(GameState &game) {
-    Score s;
+  MctsScore rollOut(GameState &game) {
+    MctsScore s;
     for (int r = 0; r < MCTS_NODE_ROLLOUTS; r++) {
       GameState g = game;
       int movesNum = 0;
@@ -132,10 +134,21 @@ struct Node {
         while (g.cards.count() < VIS_PER_PACK * PACK_CNT) {
           g.cards.set(1 + rand() % (CARDS_CNT + 1));
         }
+        // NOTE: Finer control over card replacement
+        // if (g.cards.count() < VIS_PER_PACK * PACK_CNT) {
+        //   int cardlvl = (m.quant <= 40 ? 0 : m.quant <= 70 ? 1 : 2);
+        //   int replacementCard;
+        //   do {
+        //     replacementCard = (LOWER_LVL_CARD_NUM[cardlvl] +
+        //                        rand() % (CARDS_WITH_LEVEL[cardlvl]));
+        //   } while (!g.isInGame(replacementCard));
+        //   g.cards.set(replacementCard);
+        // }
+
         g.currPlayer = g.nextPlayer();
         movesNum++;
       }
-      s += Eval(g);
+      s += MctsEval(g);
     }
     return s;
   }
@@ -166,17 +179,11 @@ struct Node {
 struct MCTS {
   int steps = 0;
   Node *root;
-#ifdef DEBUG
-  std::vector<Move> moveBacklog;
-#endif
 
   MCTS() { root = new Node(NULL); }
 
   Node *select(GameState &game) {
     Node *nd = root;
-#ifdef DEBUG
-    moveBacklog = {};
-#endif
     while (nd->vis != 0) {
 
       // Leaf node evaled but not yet expanded
@@ -187,16 +194,13 @@ struct MCTS {
 
       auto childIdx = nd->chooseChild(game.currPlayer);
       game.applyMove(nd->moves[childIdx]);
-#ifdef DEBUG
-      moveBacklog.push_back(nd->moves[childIdx]);
-#endif
       game.currPlayer = game.nextPlayer();
       nd = nd->child[childIdx];
     }
     return nd;
   }
 
-  void backprop(Node *nd, Score &s) {
+  void backprop(Node *nd, MctsScore &s) {
     while (nd) {
       nd->score += s;
       nd->vis += MCTS_NODE_ROLLOUTS;
@@ -208,7 +212,7 @@ struct MCTS {
   void SSB(GameState &game) {
     GameState g = game;
     Node *leaf = select(g);
-    Score s = leaf->rollOut(g);
+    MctsScore s = leaf->rollOut(g);
     backprop(leaf, s);
   }
 
