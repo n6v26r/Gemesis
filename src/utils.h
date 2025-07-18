@@ -34,7 +34,13 @@ inline double getTime() {
 #define MCTS_KILL_AFTER 2.0f
 #define MCTS_NODE_ROLLOUTS 10
 #define MCTS_FAILSAVE_STEPS 100000000
-#define MCTS_SIM_MAX_MOVES 100 /*rounds * 2 */
+const int MCTS_SIM_MAX_MOVES[] = {
+    0,
+    36,
+    72,
+    108,
+    144,
+};
 
 // CATEGORY: Game constants
 #define VIS_PER_PACK 4

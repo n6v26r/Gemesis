@@ -118,6 +118,7 @@ struct Node {
   void expand(GameState &game) {
     getMoves(game, moves, moveCnt);
     assert(moveCnt < MAX_MOVES);
+    ny
     for (int moveIdx = 0; moveIdx < moveCnt; moveIdx++) {
       child[moveIdx] = new Node(this);
     }
@@ -128,7 +129,7 @@ struct Node {
     for (int r = 0; r < MCTS_NODE_ROLLOUTS; r++) {
       GameState g = game;
       int movesNum = 0;
-      while (!g.isEndGame() && movesNum < MCTS_SIM_MAX_MOVES) {
+      while (!g.isEndGame() && movesNum < MCTS_SIM_MAX_MOVES[g.playerCnt]) {
         Move m = getRandMove(g);
         g.applyMove(m);
         while (g.cards.count() < VIS_PER_PACK * PACK_CNT) {
