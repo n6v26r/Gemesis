@@ -118,7 +118,6 @@ struct Node {
   void expand(GameState &game) {
     getMoves(game, moves, moveCnt);
     assert(moveCnt < MAX_MOVES);
-    ny
     for (int moveIdx = 0; moveIdx < moveCnt; moveIdx++) {
       child[moveIdx] = new Node(this);
     }
