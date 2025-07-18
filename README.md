@@ -12,3 +12,4 @@ make
 ```
 > [!NOTE]
 > Check `src/utils.h` for config options and parameters.
+> Mainly, uncomment `#define USE_MINIMAX` to use minimax (with alpha beta for 2 players) instead of MCTS.
